@@ -18,6 +18,7 @@ function match(mediaQuery, values) {
 
 var RE_MEDIA_QUERY   = /(?:(only|not)?\s*([^\s\(\)]+)\s*and\s*)?(.+)?/i,
     RE_MQ_EXPRESSION = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/,
+    RE_MQ_FEATURE    = /^(?:(min|max)-)?(.+)/,
     RE_LENGTH_VALUE  = /(\d+)(em|rem|px|cm|mm|in|pt|pc)?/;
 
 function parseQuery(mediaQuery) {
@@ -36,11 +37,14 @@ function parseQuery(mediaQuery) {
         expressions = expressions.match(/\([^\)]+\)/g);
 
         parsed.expressions = expressions.map(function (expression) {
-            var captures = expression.match(RE_MQ_EXPRESSION);
+            var captures = expression.match(RE_MQ_EXPRESSION),
+                feature  = captures[1].toLowerCase().match(RE_MQ_FEATURE);
 
             return {
-                feature: captures[1].toLowerCase(),
-                value  : captures[2]
+                feature : feature[0],
+                modifier: feature[1],
+                property: feature[2],
+                value   : captures[2]
             };
         });
 
