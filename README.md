@@ -1,7 +1,7 @@
 CSS Media Match
 ===============
 
-Determins if a givien CSS Media Query matches a set of values.
+Determines if a given CSS Media Query matches a set of values.
 
 
 License
