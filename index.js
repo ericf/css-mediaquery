@@ -16,10 +16,11 @@ function match(mediaQuery, values) {
 
 // -- Utilities ----------------------------------------------------------------
 
-var RE_MEDIA_QUERY   = /(?:(only|not)?\s*([^\s\(\)]+)\s*and\s*)?(.+)?/i,
-    RE_MQ_EXPRESSION = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/,
-    RE_MQ_FEATURE    = /^(?:(min|max)-)?(.+)/,
-    RE_LENGTH_UNIT   = /(em|rem|px|cm|mm|in|pt|pc)?$/;
+var RE_MEDIA_QUERY     = /(?:(only|not)?\s*([^\s\(\)]+)\s*and\s*)?(.+)?/i,
+    RE_MQ_EXPRESSION   = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/,
+    RE_MQ_FEATURE      = /^(?:(min|max)-)?(.+)/,
+    RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?$/,
+    RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?$/;
 
 function parseQuery(mediaQuery) {
     return mediaQuery.split(',').map(function (query) {
@@ -66,4 +67,20 @@ function toPx(length) {
         case 'pc' : return value * 72 / 12;
         default   : return value;
     }
+}
+
+function toDpi(resolution) {
+    var value = parseFloat(length),
+        units = String(length).match(RE_RESOLUTION_UNIT)[1];
+
+    switch (units) {
+        case 'dpcm': return value / 2.54;
+        case 'dppx': return value * 96;
+        default    : return value;
+    }
+}
+
+function toDecimal(ratio) {
+    var numbers = ratio.match(/^(\d+)\s*\/\s*(\d+)$/);
+    return numbers[1] / numbers[2];
 }
