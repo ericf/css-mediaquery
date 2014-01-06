@@ -66,8 +66,8 @@ function toDecimal(ratio) {
 }
 
 function toDpi(resolution) {
-    var value = parseFloat(length),
-        units = String(length).match(RE_RESOLUTION_UNIT)[1];
+    var value = parseFloat(resolution),
+        units = String(resolution).match(RE_RESOLUTION_UNIT)[1];
 
     switch (units) {
         case 'dpcm': return value / 2.54;
