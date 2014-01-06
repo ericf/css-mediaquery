@@ -53,6 +53,29 @@ function parseQuery(mediaQuery) {
     });
 }
 
+function toDecimal(ratio) {
+    var decimal = Number(ratio),
+        numbers;
+
+    if (!decimal) {
+        numbers = ratio.match(/^(\d+)\s*\/\s*(\d+)$/);
+        decimal = numbers[1] / numbers[2];
+    }
+
+    return decimal;
+}
+
+function toDpi(resolution) {
+    var value = parseFloat(length),
+        units = String(length).match(RE_RESOLUTION_UNIT)[1];
+
+    switch (units) {
+        case 'dpcm': return value / 2.54;
+        case 'dppx': return value * 96;
+        default    : return value;
+    }
+}
+
 function toPx(length) {
     var value = parseFloat(length),
         units = String(length).match(RE_LENGTH_UNIT)[1];
@@ -67,20 +90,4 @@ function toPx(length) {
         case 'pc' : return value * 72 / 12;
         default   : return value;
     }
-}
-
-function toDpi(resolution) {
-    var value = parseFloat(length),
-        units = String(length).match(RE_RESOLUTION_UNIT)[1];
-
-    switch (units) {
-        case 'dpcm': return value / 2.54;
-        case 'dppx': return value * 96;
-        default    : return value;
-    }
-}
-
-function toDecimal(ratio) {
-    var numbers = ratio.match(/^(\d+)\s*\/\s*(\d+)$/);
-    return numbers[1] / numbers[2];
 }
