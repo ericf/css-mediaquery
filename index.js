@@ -173,6 +173,9 @@ function doesMQMatch(mq, query) {
             didMQMatch = false;
         }
 
+        //If there was a `not` in front of the media query, we need to invert the match.
+        didMQMatch = (p.not) ? !didMQMatch : didMQMatch;
+
         //For each parsed mq, add a `true` or a `false` to the matches array.
         matches.push(didMQMatch);
     });
