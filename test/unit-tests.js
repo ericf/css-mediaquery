@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
     doesMQMatch = require('../');
 
-describe('#doesMQMatch() Type', function () {
+describe('#doesMQMatch() media `type`', function () {
     describe('Type', function(){
         it('should return true for a correct match', function(){
             assert.equal(doesMQMatch('screen and (color)', {type: 'screen', color: 1}), true);
@@ -17,6 +17,27 @@ describe('#doesMQMatch() Type', function () {
 
         it('should return true when no type values are passed in', function(){
             assert.equal(doesMQMatch('screen and (min-width: 48em)', {width: 1000}), true);
+        });
+    });
+});
+
+
+describe('#doesMQMatch() `not` operator', function () {
+    describe('Type', function(){
+        it('should return false when it matches up', function(){
+            assert.equal(doesMQMatch('not screen and (color)', {type: 'screen', color: 1}), false);
+        });
+
+        it('should not disrupt an OR query', function(){
+            assert.equal(doesMQMatch('not screen and (color), screen and (min-height: 48em)', {type: 'screen', height: 1000}), true);
+        });
+
+        it('should return false for when type === all', function(){
+            assert.equal(doesMQMatch('not all and (min-width: 48em)', {type: 'all', width: 1000}), false);
+        });
+
+        it('should return true for inverted value', function(){
+            assert.equal(doesMQMatch('not screen and (min-width: 48em)', {width: '24em'}), true);
         });
     });
 });
@@ -248,7 +269,7 @@ describe('#doesMQMatch() Media Features', function(){
 });
 
 describe('#doesMQMatch() Integration Tests', function () {
-    describe('Real World Use Cases', function(){
+    describe('Real World Use Cases (mostly AND)', function(){
         it('should return true because of width and type match', function(){
             assert.equal(doesMQMatch('screen and (min-width: 767px)', {type: 'screen', width: 980}), true);
         });
@@ -275,7 +296,7 @@ describe('#doesMQMatch() Integration Tests', function () {
 
     });
 
-    describe('Grouped Media Queries', function(){
+    describe('Grouped Media Queries (OR)', function(){
         it('should return true because of color', function(){
             assert.equal(doesMQMatch('screen and (min-width: 767px), screen and (color)', {type: 'screen', color: 1}), true);
         });
