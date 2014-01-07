@@ -5,7 +5,6 @@ See the accompanying LICENSE file for terms.
 */
 
 'use strict';
-
 module.exports = matchMQ;
 
 // -----------------------------------------------------------------------------
@@ -98,23 +97,88 @@ function toDecimal(ratio) {
     return numbers[1] / numbers[2];
 }
 
+
+/* Couple of array utility methods inspired by UnderscoreJS */
+
+//http://underscorejs.org/#pluck
+function pluck (o, key) {
+    return o.map(function (o) {
+        return o[key];
+    });
+};
+
+//http://underscorejs.org/#difference
+function difference (array) {
+    var rest = Array.prototype.concat.apply(Array.prototype, Array.prototype.slice.call(arguments, 1));
+    return array.filter(function(value){ return !(rest.indexOf(value) != -1) });
+};
+
+//http://underscorejs.org/#flatten
+function flatten (input) {
+    return Array.prototype.concat.apply([], input);
+}
+
+
 function doesMQMatch(mq, query) {
 
-    //get the AST
     var parsed = parseQuery(mq),
-        didMQMatch = true;
+        matches = [];
 
     parsed.forEach(function (p) {
-        p.expressions.forEach(function (e) {
-            //if the query contains this property, then we need to do a check to see if it passes the threshold. If any of the matches are false, then the media query does not pass.
-            var match = checkForMatch(e, query);
-            if (!match) {
+
+        var diff,
+            keys,
+            q = query,
+            expressionKeys = [],
+            didMQMatch = true;
+
+        //Early check to make sure we have the correct type. No point proceeding if we don't.
+        if (doesTypePass(p.type, q.type)) {
+
+            //we delete the type property from the query object so we are just left with media features
+            //TODO: should the payload be broken up into { type: 'foo', features: { width: 'bar' }}
+            delete q.type;
+
+            //Make an array out of the remaining properties
+            keys = Object.keys(q);
+
+
+            // We do a quick check to make sure all keys in the query are reflected in the media query features.
+            // If there are keys in the query which are not present in the media query features, its a false match.
+            //Get all the property values from the expressions and flatten it into an array.
+            expressionKeys.push(pluck(p.expressions, 'property'));
+            expressionKeys = flatten(expressionKeys);
+
+            //Compare the diff between the keys and the collected property values.
+            diff = difference(keys, expressionKeys);
+
+            //If there are missing keys, then it's a false match.
+            if (diff.length) {
                 didMQMatch = false;
             }
-        });
+
+            //If there is no difference, then all keys are in media query. Now we loop through the features to see it's a positive match.
+            else {
+                p.expressions.forEach(function (e) {
+                    //if the query contains this property, then we need to do a check to see if it passes the threshold. If any of the matches are false, then the media query does not pass.
+                    var match = checkForMatch(e, q);
+                    if (!match) {
+                        didMQMatch = false;
+                    }
+                });
+            }
+
+        }
+        else {
+            didMQMatch = false;
+        }
+
+        //For each parsed mq, add a `true` or a `false` to the matches array.
+        matches.push(didMQMatch);
     });
 
-    return didMQMatch;
+    //if the `matches` array contains any truthy value, return true. Else, return false.
+    return matches.indexOf(true) != -1;
 }
 
 function checkForMatch (exp, query) {
@@ -192,13 +256,11 @@ function checkMinMax (expVal, queryVal, modifier) {
 }
 
 function doesTypePass (parsed, value) {
-    var type = (value instanceof 'string') ? value : 'object'
-    if (parsed === value) {
+    if (!value || value === 'all' || parsed === value) {
         return true;
     }
-    else {
-        return false;
-    }
+
+    return false;
 }
 
 function doesLengthPass (exp, val) {
@@ -247,3 +309,4 @@ function doesGridPass (exp, val) {
     //the only way grid would return false is if we explicitly had {grid: <falsy val>} in our query object.
     return !!val;
 }
+
