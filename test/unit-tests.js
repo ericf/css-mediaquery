@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-    doesMQMatch = require('../');
+    doesMQMatch = require('../').match;
 
 describe('#doesMQMatch() media `type`', function () {
     describe('Type', function(){
