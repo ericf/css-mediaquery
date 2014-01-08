@@ -1,7 +1,7 @@
-CSS Media Match
+CSS Media Query
 ===============
 
-Determines if a given CSS Media Query matches a set of values.
+Parses and determines if a given CSS Media Query matches a set of values.
 
 
 License
