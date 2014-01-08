@@ -1,314 +1,237 @@
-var assert = require('chai').assert,
+/* global describe, it */
+'use strict';
+
+/*
+Copyright (c) 2014, Yahoo! Inc. All rights reserved.
+Copyrights licensed under the New BSD License.
+See the accompanying LICENSE file for terms.
+*/
+
+var expect = require('chai').expect,
     doesMQMatch = require('../').match;
 
-describe('#doesMQMatch() media `type`', function () {
-    describe('Type', function(){
-        it('should return true for a correct match', function(){
-            assert.equal(doesMQMatch('screen and (color)', {type: 'screen', color: 1}), true);
+describe('mediaQuery.match()', function () {
+
+    describe('Equality Check', function(){
+
+        it('Orientation: should return true for a correct match (===)', function () {
+            expect(doesMQMatch('(orientation: portrait)', {orientation: 'portrait' })).to.equal(true);
         });
 
-        it('should return true for when type === all', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 48em)', {type: 'all', width: 1000}), true);
+        it('Orientation: should return false for an incorrect match (===)', function () {
+            expect(doesMQMatch('(orientation: landscape)', {orientation: 'portrait' })).to.equal(false);
         });
 
-        it('should return false for an incorrect match', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 48em)', {type: 'handheld'}), false);
+        it('Scan: should return true for a correct match (===)', function () {
+            expect(doesMQMatch('(scan: progressive)', {scan: 'progressive' })).to.equal(true);
         });
 
-        it('should return true when no type values are passed in', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 48em)', {width: 1000}), true);
-        });
-    });
-});
-
-
-describe('#doesMQMatch() `not` operator', function () {
-    describe('Type', function(){
-        it('should return false when it matches up', function(){
-            assert.equal(doesMQMatch('not screen and (color)', {type: 'screen', color: 1}), false);
+        it('Scan: should return false for an incorrect match (===)', function () {
+            expect(doesMQMatch('(scan: progressive)', {scan: 'interlace' })).to.equal(false);
         });
 
-        it('should not disrupt an OR query', function(){
-            assert.equal(doesMQMatch('not screen and (color), screen and (min-height: 48em)', {type: 'screen', height: 1000}), true);
+        it('Width: should return true for a correct match', function(){
+            expect(doesMQMatch('(width: 800px)', {width: 800})).to.equal(true);
         });
 
-        it('should return false for when type === all', function(){
-            assert.equal(doesMQMatch('not all and (min-width: 48em)', {type: 'all', width: 1000}), false);
-        });
-
-        it('should return true for inverted value', function(){
-            assert.equal(doesMQMatch('not screen and (min-width: 48em)', {width: '24em'}), true);
-        });
-    });
-});
-
-describe('#doesMQMatch() Media Features', function(){
-    describe('Width', function(){
-        it('should return true for a width higher than a min-width', function(){
-            assert.equal(doesMQMatch('(min-width: 48em)', {width: '80em'}), true);
-        });
-
-        it('should return false for a width higher than a min-width', function(){
-            assert.equal(doesMQMatch('(min-width: 48em)', {width: '20em'}), false);
-        });
-
-        it('should return false when no width values are passed in', function(){
-            assert.equal(doesMQMatch('(min-width: 48em)', {resolution: 72}), false);
-        });
-
-        it('should return true with multiple properties', function(){
-            assert.equal(doesMQMatch('(min-width: 48em) and (color)', {width: '60em'}), true);
-        });
-
-        it('should convert units properly', function(){
-            assert.equal(doesMQMatch('(min-width: 30em) and (color)', {width: 1024}), true);
+        it('Width: should return false for an incorrect match', function(){
+            expect(doesMQMatch('(width: 800px)', {width: 900})).to.equal(false);
         });
     });
 
-    describe('Height', function(){
-        it('should return true for a height higher than a min-height', function(){
-            assert.equal(doesMQMatch('(min-height: 48em)', {height: '80em'}), true);
+    describe('Length Check', function(){
+
+        describe('Width', function () {
+            it('should return true for a width higher than a min-width', function(){
+                expect(doesMQMatch('(min-width: 48em)', {width: '80em'})).to.equal(true);
+            });
+
+            it('should return false for a width lower than a min-width', function(){
+                expect(doesMQMatch('(min-width: 48em)', {width: '20em'})).to.equal(false);
+            });
+
+            it('should return false when no width value is specified', function(){
+                expect(doesMQMatch('(min-width: 48em)', {resolution: 72})).to.equal(false);
+            });
         });
 
-        it('should return false for a height higher than a min-height', function(){
-            assert.equal(doesMQMatch('(min-height: 48em)', {height: '20em'}), false);
+        describe('Different Units', function () {
+            it('should work with ems', function(){
+                expect(doesMQMatch('(min-width: 500px)', {width: '48em'})).to.equal(true);
+            });
+
+            it('should work with rems', function(){
+                expect(doesMQMatch('(min-width: 500px)', {width: '48rem'})).to.equal(true);
+            });
+
+            it('should work with cm', function(){
+                expect(doesMQMatch('(max-height: 1000px)', {height: '20cm'})).to.equal(true);
+            });
+
+            it('should work with mm', function(){
+                expect(doesMQMatch('(max-height: 1000px)', {height: '200mm'})).to.equal(true);
+            });
+
+            it('should work with inch', function(){
+                expect(doesMQMatch('(max-height: 1000px)', {height: '20in'})).to.equal(false);
+            });
+
+            it('should work with pt', function(){
+                expect(doesMQMatch('(max-height: 1000px)', {height: '850pt'})).to.equal(false);
+            });
+
+            it('should work with pc', function(){
+                expect(doesMQMatch('(max-height: 1000px)', {height: '60pc'})).to.equal(true);
+            });
         });
 
-        it('should return false when no height values are passed in', function(){
-            assert.equal(doesMQMatch('(min-height: 48em)', {resolution: 72}), false);
-        });
-
-        it('should return true with multiple properties', function(){
-            assert.equal(doesMQMatch('(min-height: 48em) and (color)', {height: '60em'}), true);
-        });
-
-        it('should convert units properly', function(){
-            assert.equal(doesMQMatch('(min-height: 30em) and (color)', {height: 1024}), true);
-        });
     });
 
+    describe('Resolution Check', function(){
 
-    describe('Device-Width', function(){
-        it('should return true for a device-width higher than a min-device-width', function(){
-            assert.equal(doesMQMatch('(min-device-width: 48em)', {'device-width': '80em'}), true);
+        it('should return true for a resolution match', function(){
+            expect(doesMQMatch('(resolution: 50dpi)', {resolution: 50 })).to.equal(true);
         });
 
-        it('should return false for a device-width higher than a min-device-width', function(){
-            assert.equal(doesMQMatch('(min-device-width: 48em)', {'device-width': '20em'}), false);
-        });
-
-        it('should return false when no device-width values are passed in', function(){
-            assert.equal(doesMQMatch('(min-device-width: 48em)', {resolution: 72}), false);
-        });
-
-        it('should return true with multiple properties', function(){
-            assert.equal(doesMQMatch('(min-device-width: 48em) and (color)', {'device-width': '60em'}), true);
-        });
-
-        it('should convert units properly', function(){
-            assert.equal(doesMQMatch('(min-device-width: 30em) and (color)', {'device-width': 1024}), true);
-        });
-    });
-
-    describe('Device-Height', function(){
-        it('should return true for a device-height higher than a min-device-height', function(){
-            assert.equal(doesMQMatch('(min-device-height: 48em)', {'device-height': '80em'}), true);
-        });
-
-        it('should return false for a device-height higher than a min-device-height', function(){
-            assert.equal(doesMQMatch('(min-device-height: 48em)', {'device-height': '20em'}), false);
-        });
-
-        it('should return false when no device-height values are passed in', function(){
-            assert.equal(doesMQMatch('(min-device-height: 48em)', {resolution: 72}), false);
-        });
-
-        it('should return true with multiple properties', function(){
-            assert.equal(doesMQMatch('(min-device-height: 48em) and (color)', {'device-height': '60em'}), true);
-        });
-
-        it('should convert units properly', function(){
-            assert.equal(doesMQMatch('(min-device-height: 30em) and (color)', {'device-height': 1024}), true);
-        });
-    });
-
-
-
-    describe('Color', function () {
-        it('should return true for a color higher than a min-color', function(){
-            assert.equal(doesMQMatch('(min-color: 2)', {color: 3 }), true);
-        });
-
-        it('should return false for a color higher than a max-color', function(){
-            assert.equal(doesMQMatch('(max-color: 2)', {color: 4 }), false);
-        });
-
-        it('should return false if color isnt passed in', function(){
-            assert.equal(doesMQMatch('max-width: 767px and (color)', {width: 300}), false);
-        });
-
-        it('should work for undefined color values', function(){
-            assert.equal(doesMQMatch('(color)', {color: 4 }), true);
-            assert.equal(doesMQMatch('(color)', {color: 0 }), false);
-        });
-    });
-
-    describe('Color-Index', function () {
-        it('should return true for a color-index higher than a min-color-index', function(){
-            assert.equal(doesMQMatch('(min-color-index: 1)', {'color-index': 256 }), true);
-        });
-
-        it('should return false for a color-index higher than a max-color-index', function(){
-            assert.equal(doesMQMatch('(max-color-index: 256)', {'color-index': 512 }), false);
-        });
-
-        it('should return false if color-index isnt passed in', function(){
-            assert.equal(doesMQMatch('max-width: 767px and (color-index)', {width: 300}), false);
-        });
-
-        it('should work for undefined color-index values', function(){
-            assert.equal(doesMQMatch('(color-index)', {'color-index': 1 }), true);
-            assert.equal(doesMQMatch('(color-index)', {'color-index': 0 }), false);
-        });
-    });
-
-
-    describe('Monochrome', function () {
-        it('should return true for a monochrome higher than a min-monochrome', function(){
-            assert.equal(doesMQMatch('(min-monochrome: 1)', {monochrome: 3 }), true);
-        });
-
-        it('should return false for a monochrome higher than a max-monochrome', function(){
-            assert.equal(doesMQMatch('(max-monochrome: 3)', {monochrome: 4 }), false);
-        });
-
-        it('should return false if monochrome isnt passed in', function(){
-            assert.equal(doesMQMatch('max-width: 767px and (monochrome)', {width: 300}), false);
-        });
-
-        it('should work for undefined monochrome values', function(){
-            assert.equal(doesMQMatch('(monochrome)', {'monochrome': 3 }), true);
-            assert.equal(doesMQMatch('(monochrome)', {'monochrome': 0 }), false);
-        });
-    });
-
-
-    describe('Resolution', function () {
         it('should return true for a resolution higher than a min-resolution', function(){
-            assert.equal(doesMQMatch('(min-resolution: 50dpi)', {resolution: 72 }), true);
+            expect(doesMQMatch('(min-resolution: 50dpi)', {resolution: 72 })).to.equal(true);
         });
 
         it('should return false for a resolution higher than a max-resolution', function(){
-            assert.equal(doesMQMatch('(max-resolution: 72dpi)', {resolution: 300 }), false);
+            expect(doesMQMatch('(max-resolution: 72dpi)', {resolution: 300 })).to.equal(false);
         });
 
         it('should return false if resolution isnt passed in', function(){
-            assert.equal(doesMQMatch('(max-resolution: 72dpi)', {width: 300}), false);
+            expect(doesMQMatch('(min-resolution: 72dpi)', {width: 300 })).to.equal(false);
         });
 
         it('should convert units properly', function(){
-            assert.equal(doesMQMatch('(min-resolution: 72dpi)', {resolution: '75dpcm' }), false);
+            expect(doesMQMatch('(min-resolution: 72dpi)', {resolution: '75dpcm' })).to.equal(false);
+            expect(doesMQMatch('(resolution: 192dpi)', {resolution: '2dppx' })).to.equal(true);
         });
     });
 
-    describe('Aspect-Ratio', function () {
+    describe('Aspect Ratio Check', function(){
+
         it('should return true for an aspect-ratio higher than a min-aspect-ratio', function(){
-            assert.equal(doesMQMatch('(min-aspect-ratio: 4/3)', {'aspect-ratio': '16/9' }), true);
+            expect(doesMQMatch('(min-aspect-ratio: 4/3)', {'aspect-ratio': '16/9' })).to.equal(true);
         });
 
         it('should return false for an aspect-ratio higher than a max-aspect-ratio', function(){
-            assert.equal(doesMQMatch('(max-aspect-ratio: 4/3)', {'aspect-ratio': '16/9' }), false);
+            expect(doesMQMatch('(max-aspect-ratio: 4/3)', {'aspect-ratio': '16/9' })).to.equal(false);
         });
 
         it('should return false if aspect-ratio isnt passed in', function(){
-            assert.equal(doesMQMatch('(max-aspect-ratio: 72dpi)', {width: 300}), false);
+            expect(doesMQMatch('(max-aspect-ratio: 72dpi)', {width: 300})).to.equal(false);
         });
 
-        it('should work with strings and numbers', function(){
-            assert.equal(doesMQMatch('(min-aspect-ratio: 2560/1440)', {'aspect-ratio': 4/3 }), false);
+        it('should work numbers', function(){
+            expect(doesMQMatch('(min-aspect-ratio: 2560/1440)', {'aspect-ratio': 4/3 })).to.equal(false);
         });
     });
 
-    describe('Scan', function () {
+    describe('Grid/Color/Color-Index/Monochrome', function(){
+
         it('should return true for a correct match', function(){
-            assert.equal(doesMQMatch('tv and (scan: progressive)', {scan: 'progressive' }), true);
+            expect(doesMQMatch('(grid)', {grid: 1})).to.equal(true);
+            expect(doesMQMatch('(color)', {color: 1})).to.equal(true);
+            expect(doesMQMatch('(color-index: 3)', {'color-index': 3})).to.equal(true);
+            expect(doesMQMatch('(monochrome)', {monochrome: 1})).to.equal(true);
+
         });
 
         it('should return false for an incorrect match', function(){
-            assert.equal(doesMQMatch('tv and (scan: progressive)', {scan: 'interlace' }), false);
+            expect(doesMQMatch('(grid)', {grid: 0})).to.equal(false);
+            expect(doesMQMatch('(color)', {color: 0})).to.equal(false);
+            expect(doesMQMatch('(color-index: 3)', {'color-index': 2})).to.equal(false);
+            expect(doesMQMatch('(monochrome)', {monochrome: 0})).to.equal(false);
+            expect(doesMQMatch('(monochrome)', {monochrome: 'foo'})).to.equal(false);
         });
+
+
     });
 
-    describe('Orientation', function () {
+
+    describe('Type', function(){
+
         it('should return true for a correct match', function(){
-            assert.equal(doesMQMatch('screen and (orientation: portrait)', {orientation: 'portrait' }), true);
+            expect(doesMQMatch('screen', {type: 'screen'})).to.equal(true);
         });
 
         it('should return false for an incorrect match', function(){
-            assert.equal(doesMQMatch('screen and (orientation: landscape)', {orientation: 'portrait' }), false);
+            expect(doesMQMatch('screen and (color:1)', {type: 'tv', color: 1})).to.equal(false);
         });
 
-        it('should return false if orientation isnt passed in', function(){
-            assert.equal(doesMQMatch('screen and (orientation: landscape)', {width: '50em' }), false);
+        it('should return false for a media query without a type when type is specified in the value object', function(){
+            expect(doesMQMatch('(min-width: 500px)', {type: 'screen'})).to.equal(false);
+        });
+
+        it('should return true for a media query without a type when type is not specified in the value object', function(){
+            expect(doesMQMatch('(min-width: 500px)', {width: 700})).to.equal(true);
+        });
+    });
+
+    describe('Not', function(){
+
+        it('should return false when theres a match on a `not` query', function(){
+            expect(doesMQMatch('not screen and (color)', {type: 'screen', color: 1})).to.equal(false);
+        });
+
+        it('should not disrupt an OR query', function(){
+            expect(doesMQMatch('not screen and (color), screen and (min-height: 48em)', {type: 'screen', height: 1000})).to.equal(true);
+        });
+
+        it('should return false for when type === all', function(){
+            expect(doesMQMatch('not all and (min-width: 48em)', {type: 'all', width: 1000})).to.equal(false);
+        });
+
+        it('should return true for inverted value', function(){
+            expect(doesMQMatch('not screen and (min-width: 48em)', {width: '24em'})).to.equal(true);
         });
     });
 
-    describe('Grid', function () {
-        it('should return true for a correct match', function(){
-            assert.equal(doesMQMatch('handheld and (grid)', {grid: true }), true);
+    describe('#doesMQMatch() Integration Tests', function () {
+        describe('Real World Use Cases (mostly AND)', function(){
+            it('should return true because of width and type match', function(){
+                expect(doesMQMatch('screen and (min-width: 767px)', {type: 'screen', width: 980})).to.equal(true);
+            });
+
+            it('should return true because of width is within bounds', function(){
+                expect(doesMQMatch('screen and (min-width: 767px) and (max-width: 979px)', {type: 'screen', width: 800})).to.equal(true);
+            });
+
+            it('should return false because width is out of bounds', function(){
+                expect(doesMQMatch('screen and (min-width: 767px) and (max-width: 979px)', {type: 'screen', width: 980})).to.equal(false);
+            });
+
+            it('should return false since monochrome is not specified', function(){
+                expect(doesMQMatch('screen and (monochrome)', {width: 980})).to.equal(false);
+            });
+
+            it('should return true since color > 0', function(){
+                expect(doesMQMatch('screen and (color)', {type: 'screen', color: 1})).to.equal(true);
+            });
+
+            it('should return false since color = 0', function(){
+                expect(doesMQMatch('screen and (color)', {type: 'all', color: 0})).to.equal(false);
+            });
+
         });
 
-        it('should return false if grid isnt passed in', function(){
-            assert.equal(doesMQMatch('tv and (grid)', {scan: 'interlace' }), false);
+        describe('Grouped Media Queries (OR)', function(){
+            it('should return true because of color', function(){
+                expect(doesMQMatch('screen and (min-width: 767px), screen and (color)', {type: 'screen', color: 1})).to.equal(true);
+            });
+
+            it('should return true because of width and type', function(){
+                expect(doesMQMatch('screen and (max-width: 1200px), handheld and (monochrome)', {type: 'screen', width: 1100})).to.equal(true);
+            });
+
+            it('should return false because of monochrome mis-match', function(){
+                expect(doesMQMatch('screen and (max-width: 1200px), handheld and (monochrome)', {type: 'screen', monochrome: 0})).to.equal(false);
+            });
+
         });
-
-        it('should return false if grid is explictly set to false', function(){
-            assert.equal(doesMQMatch('tv and (grid)', {scan: 'interlace', grid: false }), false);
-        });
-    });
-});
-
-describe('#doesMQMatch() Integration Tests', function () {
-    describe('Real World Use Cases (mostly AND)', function(){
-        it('should return true because of width and type match', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 767px)', {type: 'screen', width: 980}), true);
-        });
-
-        it('should return true because of width is within bounds', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 767px) and (max-width: 979px)', {type: 'screen', width: 800}), true);
-        });
-
-        it('should return false because width is out of bounds', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 767px) and (max-width: 979px)', {type: 'screen', width: 980}), false);
-        });
-
-        it('should return false since monochrome is not specified', function(){
-            assert.equal(doesMQMatch('screen and (monochrome)', {width: 980}), false);
-        });
-
-        it('should return true since color > 0', function(){
-            assert.equal(doesMQMatch('screen and (color)', {type: 'all', color: 1}), true);
-        });
-
-        it('should return false since color = 0', function(){
-            assert.equal(doesMQMatch('screen and (color)', {type: 'all', color: 0}), false);
-        });
-
-    });
-
-    describe('Grouped Media Queries (OR)', function(){
-        it('should return true because of color', function(){
-            assert.equal(doesMQMatch('screen and (min-width: 767px), screen and (color)', {type: 'screen', color: 1}), true);
-        });
-
-        it('should return true because of width and type', function(){
-            assert.equal(doesMQMatch('screen and (max-width: 1200px), handheld and (monochrome)', {type: 'screen', width: 1100}), true);
-        });
-
-        it('should return false because of monochrome mis-match', function(){
-            assert.equal(doesMQMatch('screen and (max-width: 1200px), handheld and (monochrome)', {type: 'screen', monochrome: 0}), false);
-        });
-
     });
 });
 
