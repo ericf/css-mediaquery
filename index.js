@@ -23,8 +23,7 @@ function matchQuery(mediaQuery, values) {
 
         // Either the parsed or specified `type` is "all", or the types must be
         // equal for a match.
-        var typeMatch = query.type === 'all' || values.type === 'all' ||
-                values.type === query.type;
+        var typeMatch = query.type === 'all' || values.type === query.type;
 
         // Quit early when `type` doesn't match, but take "not" into account.
         if ((typeMatch && inverse) || !(typeMatch || inverse)) {
