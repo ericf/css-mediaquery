@@ -1,7 +1,7 @@
 {
-  "name": "css-media-match",
+  "name": "css-mediaquery",
   "version": "0.0.0",
-  "description": "Determines if a given CSS Media Query matches a set of values.",
+  "description": "Parses and determines if a given CSS Media Query matches a set of values.",
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha -R spec"
