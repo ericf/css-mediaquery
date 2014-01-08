@@ -4,7 +4,7 @@
   "description": "Parses and determines if a given CSS Media Query matches a set of values.",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha -R spec"
+    "test": "istanbul cover -- ./node_modules/mocha/bin/_mocha test/ --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/ericf/css-media-match",
   "devDependencies": {
     "mocha": "~1.16.2",
-    "chai": "~1.8.1"
+    "chai": "~1.8.1",
+    "istanbul": "~0.2.3"
   }
 }
