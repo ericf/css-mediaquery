@@ -59,6 +59,7 @@ function matchQuery(mediaQuery, values) {
 
                 case 'aspect-ratio':
                 case 'device-aspect-ratio':
+                case /* Deprecated */ 'device-pixel-ratio':
                     expValue = toDecimal(expValue);
                     value    = toDecimal(value);
                     break;
