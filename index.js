@@ -96,7 +96,7 @@ function parseQuery(mediaQuery) {
         parsed.type    = type ? type.toLowerCase() : 'all';
 
         // Split expressions into a list.
-        expressions = expressions.match(/\([^\)]+\)/g);
+        expressions = expressions.match(/\([^\)]+\)/g) || [];
 
         parsed.expressions = expressions.map(function (expression) {
             var captures = expression.match(RE_MQ_EXPRESSION),
