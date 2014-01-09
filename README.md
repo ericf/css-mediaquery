@@ -23,6 +23,21 @@ Usage
 This package has two exports: `parse()`, and `match()` which can parse CSS Media
 Queries and determine if a media query matches a given set of values.
 
+### Matching
+
+The `match()` method lets you compare a media query expression with a JavaScript object and determine if a media query matches a given set of values.
+
+```javascript
+var mediaQuery = require('css-mediaquery');
+
+var isMatch = mediaQuery.match('screen and (min-width: 40em)', {
+    type : 'screen',
+    width: '1024px'
+});
+
+console.log(isMatch); // => true
+```
+
 ### Parsing
 
 Existing CSS Parsers don't do a great job at parsing the details of media queries. That's where `css-mediaquery` shines. You can parse a media query expression and get an AST back by using the `parse()` method.
@@ -52,21 +67,6 @@ The `ast` variable will have the following payload:
     }
 ]
 
-```
-
-### Matching
-
-The `match()` method lets you compare a media query expression with a JavaScript object and determine if a media query matches a given set of values.
-
-```javascript
-var mediaQuery = require('css-mediaquery');
-
-var isMatch = mediaQuery.match('screen and (min-width: 40em)', {
-    type : 'screen',
-    width: '1024px'
-});
-
-console.log(isMatch); // => true
 ```
 
 This package was written with care to following the W3C Recommendations for
