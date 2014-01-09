@@ -9,6 +9,38 @@ Parses and determines if a given CSS Media Query matches a set of values via
 JavaScript.
 
 
+Usage
+-----
+
+This package has two exports: `parse()`, and `match()` which can parse CSS Media
+Queries and determine if a media query matches a given set of values.
+
+```javascript
+var mediaQuery = require('css-mediaquery');
+
+var isMatch = mediaQuery.match('screen and (min-width: 40em)', {
+    type : 'screen',
+    width: '1024px'
+});
+
+console.log(isMatch); // => true
+```
+
+This package was written with care to following the W3C Recommendations for
+[CSS3 Media Queries][w3c-mq] and [CSS3 Values and Units][w3c-vu]. It supports
+all of the [Media Features][w3c-mq-features] and will properly convert values to
+a common unit before comparing them.
+
+The values specified to check a media query string against should be thought of
+as if they are the current state of a device/browser. A `type` value _must_ be
+specified, and it can _not_ be `"all"`.
+
+
+[w3c-mq]: http://www.w3.org/TR/css3-mediaqueries/
+[w3c-mq-features]: http://www.w3.org/TR/css3-mediaqueries/#media1
+[w3c-vu]: http://www.w3.org/TR/css3-values/
+
+
 License
 -------
 
