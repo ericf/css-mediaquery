@@ -14,10 +14,15 @@
     "css",
     "media",
     "query",
+    "mediaquery",
+    "mobile",
     "parse",
     "match"
   ],
   "author": "Eric Ferraiuolo <eferraiuolo@gmail.com>",
+  "contributors": [
+    "Tilo Mitra <tilomitra@gmail.com>"
+  ],
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/ericf/css-mediaquery/issues"
