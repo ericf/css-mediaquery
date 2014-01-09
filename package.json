@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ericf/css-media-match.git"
+    "url": "git://github.com/ericf/css-mediaquery.git"
   },
   "keywords": [
     "css",
@@ -20,9 +20,9 @@
   "author": "Eric Ferraiuolo <eferraiuolo@gmail.com>",
   "license": "BSD",
   "bugs": {
-    "url": "https://github.com/ericf/css-media-match/issues"
+    "url": "https://github.com/ericf/css-mediaquery/issues"
   },
-  "homepage": "https://github.com/ericf/css-media-match",
+  "homepage": "https://github.com/ericf/css-mediaquery",
   "devDependencies": {
     "mocha": "~1.16.2",
     "chai": "~1.8.1",
