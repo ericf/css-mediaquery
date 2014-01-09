@@ -11,10 +11,10 @@ JavaScript.
 Installation
 ------------
 
-Install via npm
+Install via npm:
 
-```
-npm install css-mediaquery
+```shell
+$ npm install css-mediaquery
 ```
 
 Usage
@@ -39,6 +39,10 @@ var isMatch = mediaQuery.match('screen and (min-width: 40em)', {
 console.log(isMatch); // => true
 ```
 
+The values specified to check a media query string against should be thought of
+as if they are the current state of a device/browser. A `type` value _must_ be
+specified, and it can _not_ be `"all"`.
+
 ### Parsing
 
 Existing CSS Parsers don't do a great job at parsing the details of media
@@ -46,29 +50,33 @@ queries. That's where `css-mediaquery` shines. You can parse a media query
 expression and get an AST back by using the `parse()` method.
 
 ```javascript
-
-var mediaQuery = require('css-mediaquery');
-
-var ast = mediaQuery.parse('screen and (min-width: 48em)');
+var mediaQuery = require('css-mediaquery'),
+    ast        = mediaQuery.parse('screen and (min-width: 48em)');
 ```
 
 The `ast` variable will have the following payload:
 
 ```javascript
-[ { inverse: false, type: 'screen', expressions: [
-    { modifier: 'min', feature: 'width', value: '48em' }
-] } ]
+[
+    {
+        inverse: false,
+        type   : 'screen',
+
+        expressions: [
+            {
+                modifier: 'min',
+                feature : 'width',
+                value   : '48em'
+            }
+        ]
+    }
+]
 ```
 
 This package was written with care to following the W3C Recommendations for
 [CSS3 Media Queries][w3c-mq] and [CSS3 Values and Units][w3c-vu]. It supports
 all of the [Media Features][w3c-mq-features] and will properly convert values to
 a common unit before comparing them.
-
-
-The values specified to check a media query string against should be thought of
-as if they are the current state of a device/browser. A `type` value _must_ be
-specified, and it can _not_ be `"all"`.
 
 
 [w3c-mq]: http://www.w3.org/TR/css3-mediaqueries/
