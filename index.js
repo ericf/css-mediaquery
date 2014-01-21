@@ -21,8 +21,10 @@ function matchQuery(mediaQuery, values) {
     return parseQuery(mediaQuery).some(function (query) {
         var inverse = query.inverse;
 
-        //{only: false} is assumed by default, unless someone explicitly asks for `{only: true}`
-        //Doing this so we don't need to have `{only: false}` in every `values` object.
+        //{only: false} is assumed by default, unless someone explicitly asks
+        //for `{only: true}`
+        //Doing this so we don't need to have `{only: false}` in every
+        //`values` object.
         var only = values.only || false;
 
         // Either the parsed or specified `type` is "all", or the types must be
@@ -30,7 +32,8 @@ function matchQuery(mediaQuery, values) {
         var typeMatch = query.type === 'all' || values.type === query.type;
 
         // Quit early when `type` doesn't match, but take "not" into account.
-        if ((typeMatch && inverse) || !(typeMatch || inverse) || (query.only !== only)) {
+        if ((typeMatch && inverse) || !(typeMatch || inverse) ||
+            (query.only !== only)) {
             return false;
         }
 
