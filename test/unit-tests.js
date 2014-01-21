@@ -5,6 +5,26 @@
 var expect     = require('chai').expect,
     mediaQuery = require('../');
 
+describe('mediaQuery.parse()', function () {
+    it('should parse media queries without expressions', function () {
+        expect(mediaQuery.parse('screen')).to.eql([
+            {
+                inverse    : false,
+                type       : 'screen',
+                expressions: []
+            }
+        ]);
+
+        expect(mediaQuery.parse('not screen')).to.eql([
+            {
+                inverse    : true,
+                type       : 'screen',
+                expressions: []
+            }
+        ]);
+    });
+});
+
 describe('mediaQuery.match()', function () {
     describe('Equality Check', function () {
         it('Orientation: should return true for a correct match (===)', function () {
@@ -279,7 +299,7 @@ describe('mediaQuery.match()', function () {
         });
     });
 
-    describe('#mediaQuery.match() Integration Tests', function () {
+    describe('mediaQuery.match() Integration Tests', function () {
         describe('Real World Use Cases (mostly AND)', function () {
             it('should return true because of width and type match', function () {
                 expect(mediaQuery.match(

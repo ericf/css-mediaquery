@@ -11,7 +11,7 @@ exports.parse = parseQuery;
 
 // -----------------------------------------------------------------------------
 
-var RE_MEDIA_QUERY     = /(?:(only|not)?\s*([^\s\(\)]+)\s*and\s*)?(.+)?/i,
+var RE_MEDIA_QUERY     = /(?:(only|not)?\s*([^\s\(\)]+)(?:\s*and)?\s*)?(.+)?/i,
     RE_MQ_EXPRESSION   = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/,
     RE_MQ_FEATURE      = /^(?:(min|max)-)?(.+)/,
     RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?$/,
@@ -86,10 +86,12 @@ function matchQuery(mediaQuery, values) {
 
 function parseQuery(mediaQuery) {
     return mediaQuery.split(',').map(function (query) {
+        query = query.trim();
+
         var captures    = query.match(RE_MEDIA_QUERY),
             modifier    = captures[1],
             type        = captures[2],
-            expressions = captures[3],
+            expressions = captures[3] || '',
             parsed      = {};
 
         parsed.inverse = !!modifier && modifier.toLowerCase() === 'not';
