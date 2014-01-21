@@ -279,6 +279,20 @@ describe('mediaQuery.match()', function () {
         });
     });
 
+    describe('Only', function () {
+        it('should return true if `only` is defined in the query', function () {
+            expect(mediaQuery.match(
+                'only screen and (color)', {only: true, type: 'screen', color: 1}
+            )).to.be.true;
+        });
+
+        it('should return false if `only` is not defined in the query', function () {
+            expect(mediaQuery.match(
+                'screen and (color)', {type: 'screen', only: true, color: 1}
+            )).to.be.false;
+        });
+    });
+
     describe('#mediaQuery.match() Integration Tests', function () {
         describe('Real World Use Cases (mostly AND)', function () {
             it('should return true because of width and type match', function () {
