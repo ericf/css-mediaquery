@@ -1,6 +1,6 @@
 {
   "name": "css-mediaquery",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Parses and determines if a given CSS Media Query matches a set of values.",
   "main": "index.js",
   "scripts": {
