@@ -25,8 +25,6 @@ function matchQuery(mediaQuery, values) {
         //Doing this so we don't need to have `{only: false}` in every `values` object.
         var only = values.only || false;
 
-        console.log(only);
-        console.log(query.only);
         // Either the parsed or specified `type` is "all", or the types must be
         // equal for a match.
         var typeMatch = query.type === 'all' || values.type === query.type;
