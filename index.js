@@ -4,10 +4,31 @@ Copyrights licensed under the New BSD License.
 See the accompanying LICENSE file for terms.
 */
 
+(function (root, factory) {
+    'use strict';
+
+    // UMD
+    /* istanbul ignore next */
+    if (typeof define === 'function' && define.amd) {
+        define(factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
+    } else if (typeof YUI !== 'undefined' && YUI.add) {
+        YUI.add('css-mediaquery', factory, '0.1.2', {es: true});
+    } else {
+        root.mediaQuery = factory();
+    }
+
+})(typeof global !== 'undefined' ? global : this, function () {
+
+// -----------------------------------------------------------------------------
+
 'use strict';
 
-exports.match = matchQuery;
-exports.parse = parseQuery;
+var exports = {
+    match: matchQuery,
+    parse: parseQuery
+};
 
 // -----------------------------------------------------------------------------
 
@@ -178,3 +199,7 @@ function toPx(length) {
         default   : return value;
     }
 }
+
+return exports;
+
+});
