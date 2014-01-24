@@ -11,11 +11,11 @@ exports.parse = parseQuery;
 
 // -----------------------------------------------------------------------------
 
-var RE_MEDIA_QUERY     = /(?:(only|not)?\s*([^\s\(\)]+)(?:\s*and)?\s*)?(.+)?/i,
-    RE_MQ_EXPRESSION   = /\(\s*([^\s\:\)]+)\s*(?:\:\s*([^\s\)]+))?\s*\)/,
+var RE_MEDIA_QUERY     = /^(?:(only|not)?\s*([_a-z][_a-z0-9-]*)|(\([^\)]+\)))(?:\s*and\s*(.*))?$/i,
+    RE_MQ_EXPRESSION   = /^\(\s*([_a-z-][_a-z0-9-]*)\s*(?:\:\s*([^\)]+))?\s*\)$/,
     RE_MQ_FEATURE      = /^(?:(min|max)-)?(.+)/,
-    RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?$/,
-    RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?$/;
+    RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?\s*$/,
+    RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?\s*$/;
 
 function matchQuery(mediaQuery, values) {
     return parseQuery(mediaQuery).some(function (query) {
@@ -88,21 +88,44 @@ function parseQuery(mediaQuery) {
     return mediaQuery.split(',').map(function (query) {
         query = query.trim();
 
-        var captures    = query.match(RE_MEDIA_QUERY),
-            modifier    = captures[1],
+        var captures = query.match(RE_MEDIA_QUERY);
+
+        // Media Query must be valid.
+        if (!captures) {
+            throw new SyntaxError('Invalid CSS media query: ' + query);
+        }
+
+        var modifier    = captures[1],
             type        = captures[2],
-            expressions = captures[3] || '',
+            expressions = ((captures[3] || '') + (captures[4] || '')).trim(),
             parsed      = {};
 
         parsed.inverse = !!modifier && modifier.toLowerCase() === 'not';
         parsed.type    = type ? type.toLowerCase() : 'all';
 
+        // Check for media query expressions.
+        if (!expressions) {
+            parsed.expressions = [];
+            return parsed;
+        }
+
         // Split expressions into a list.
-        expressions = expressions.match(/\([^\)]+\)/g) || [];
+        expressions = expressions.match(/\([^\)]+\)/g);
+
+        // Media Query must be valid.
+        if (!expressions) {
+            throw new SyntaxError('Invalid CSS media query: ' + query);
+        }
 
         parsed.expressions = expressions.map(function (expression) {
-            var captures = expression.match(RE_MQ_EXPRESSION),
-                feature  = captures[1].toLowerCase().match(RE_MQ_FEATURE);
+            var captures = expression.match(RE_MQ_EXPRESSION);
+
+            // Media Query must be valid.
+            if (!captures) {
+                throw new SyntaxError('Invalid CSS media query: ' + query);
+            }
+
+            var feature = captures[1].toLowerCase().match(RE_MQ_FEATURE);
 
             return {
                 modifier: feature[1],
