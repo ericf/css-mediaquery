@@ -92,7 +92,7 @@ function parseQuery(mediaQuery) {
 
         // Media Query must be valid.
         if (!captures) {
-            throw new SyntaxError('Invalid CSS media query: ' + query);
+            throw new SyntaxError('Invalid CSS media query: +' + query + '"');
         }
 
         var modifier    = captures[1],
@@ -114,7 +114,7 @@ function parseQuery(mediaQuery) {
 
         // Media Query must be valid.
         if (!expressions) {
-            throw new SyntaxError('Invalid CSS media query: ' + query);
+            throw new SyntaxError('Invalid CSS media query: +' + query + '"');
         }
 
         parsed.expressions = expressions.map(function (expression) {
@@ -122,7 +122,7 @@ function parseQuery(mediaQuery) {
 
             // Media Query must be valid.
             if (!captures) {
-                throw new SyntaxError('Invalid CSS media query: ' + query);
+                throw new SyntaxError('Invalid CSS media query: +' + query + '"');
             }
 
             var feature = captures[1].toLowerCase().match(RE_MQ_FEATURE);
