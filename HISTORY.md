@@ -1,6 +1,13 @@
 CSS Media Query Change History
 ==============================
 
+NEXT
+----
+
+* Made `parse()` sticter; it will now thorw a `SyntaxError` if a media query is
+  invalid. This makes it behave more like `JSON.parse()`.
+
+
 0.1.2 (2014-01-21)
 ------------------
 
