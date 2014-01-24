@@ -15,6 +15,7 @@
     "media",
     "query",
     "mediaquery",
+    "media-query",
     "mobile",
     "parse",
     "match"
