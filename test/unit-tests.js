@@ -53,6 +53,10 @@ describe('mediaQuery.parse()', function () {
         expect(parse('()')).to.throw(SyntaxError);
         expect(parse('(foo) (bar)')).to.throw(SyntaxError);
         expect(parse('(foo:) and (bar)')).to.throw(SyntaxError);
+
+        //These should fail
+        expect(parse('foo')).to.throw(SyntaxError);
+        expect(parse('foo and (max-width: 48em)')).to.throw(SyntaxError);
     });
 });
 
