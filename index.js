@@ -17,7 +17,7 @@ var RE_MEDIA_QUERY     = /^(?:(only|not)?\s*([_a-z][_a-z0-9-]*)|(\([^\)]+\)))(?:
     RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?\s*$/,
     RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?\s*$/;
 
-function matchQuery(mediaQuery, values) {
+function matchQuery(mediaQuery, values, ignores) {
     return parseQuery(mediaQuery).some(function (query) {
         var inverse = query.inverse;
 
@@ -34,8 +34,11 @@ function matchQuery(mediaQuery, values) {
             var feature  = expression.feature,
                 modifier = expression.modifier,
                 expValue = expression.value,
-                value    = values[feature];
+                value    = values[feature],
+                ignore   = ignores === undefined ? undefined : ignores[feature];
 
+            // Feature in ignore list
+            if (ignore) { return true; }
             // Missing or falsy values don't match.
             if (!value) { return false; }
 
