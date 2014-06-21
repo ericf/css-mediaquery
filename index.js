@@ -13,9 +13,10 @@ exports.parse = parseQuery;
 
 var RE_MEDIA_QUERY     = /^(?:(only|not)?\s*([_a-z][_a-z0-9-]*)|(\([^\)]+\)))(?:\s*and\s*(.*))?$/i,
     RE_MQ_EXPRESSION   = /^\(\s*([_a-z-][_a-z0-9-]*)\s*(?:\:\s*([^\)]+))?\s*\)$/,
-    RE_MQ_FEATURE      = /^(?:(min|max)-)?(.+)/,
+    RE_MQ_FEATURE      = /^(?:-(webkit|moz|o)-)?(?:(min|max)-)?(?:-(moz)-)?(.+)/,
     RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?\s*$/,
-    RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?\s*$/;
+    RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?\s*$/,
+    RE_COMMENTS        = /\/\*[^*]*\*+([^/][^*]*\*+)*\//gi;
 
 function matchQuery(mediaQuery, values) {
     return parseQuery(mediaQuery).some(function (query) {
@@ -68,8 +69,8 @@ function matchQuery(mediaQuery, values) {
                 case 'color':
                 case 'color-index':
                 case 'monochrome':
-                    expValue = parseInt(expValue, 10) || 1;
-                    value    = parseInt(value, 10) || 0;
+                    expValue = !isNaN(expValue) ? parseInt(expValue, 10) : value > 0 ? value : 1;
+                    value    = !isNaN(value) ? parseInt(value, 10) : expValue > 0 ? expValue : 0;
                     break;
             }
 
@@ -86,6 +87,8 @@ function matchQuery(mediaQuery, values) {
 
 function parseQuery(mediaQuery) {
     return mediaQuery.split(',').map(function (query) {
+        // Remove comments first
+        query = query.replace(RE_COMMENTS, '');
         query = query.trim();
 
         var captures = query.match(RE_MEDIA_QUERY);
@@ -128,8 +131,8 @@ function parseQuery(mediaQuery) {
             var feature = captures[1].toLowerCase().match(RE_MQ_FEATURE);
 
             return {
-                modifier: feature[1],
-                feature : feature[2],
+                modifier: feature[2],
+                feature : feature[4],
                 value   : captures[2]
             };
         });
