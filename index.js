@@ -69,8 +69,8 @@ function matchQuery(mediaQuery, values) {
                 case 'color':
                 case 'color-index':
                 case 'monochrome':
-                    expValue = parseInt(expValue, 10) || 1;
-                    value    = parseInt(value, 10) || 0;
+                    expValue = !isNaN(expValue) ? parseInt(expValue, 10) : value > 0 ? value : 1;
+                    value    = !isNaN(value) ? parseInt(value, 10) : expValue > 0 ? expValue : 0;
                     break;
             }
 
