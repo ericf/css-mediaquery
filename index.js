@@ -6,8 +6,9 @@ See the accompanying LICENSE file for terms.
 
 'use strict';
 
-exports.match = matchQuery;
-exports.parse = parseQuery;
+exports.match        = matchQuery;
+exports.parse        = parseQuery;
+exports.matchFromAST = matchFromAST;
 
 // -----------------------------------------------------------------------------
 
@@ -17,71 +18,16 @@ var RE_MEDIA_QUERY     = /^(?:(only|not)?\s*([_a-z][_a-z0-9-]*)|(\([^\)]+\)))(?:
     RE_LENGTH_UNIT     = /(em|rem|px|cm|mm|in|pt|pc)?\s*$/,
     RE_RESOLUTION_UNIT = /(dpi|dpcm|dppx)?\s*$/;
 
+function matchFromAST(ast, values){
+	return ast.some(function(expression){
+		return matchSingleExpression(expression, values);
+	});
+}
+	
 function matchQuery(mediaQuery, values) {
-    return parseQuery(mediaQuery).some(function (query) {
-        var inverse = query.inverse;
-
-        // Either the parsed or specified `type` is "all", or the types must be
-        // equal for a match.
-        var typeMatch = query.type === 'all' || values.type === query.type;
-
-        // Quit early when `type` doesn't match, but take "not" into account.
-        if ((typeMatch && inverse) || !(typeMatch || inverse)) {
-            return false;
-        }
-
-        var expressionsMatch = query.expressions.every(function (expression) {
-            var feature  = expression.feature,
-                modifier = expression.modifier,
-                expValue = expression.value,
-                value    = values[feature];
-
-            // Missing or falsy values don't match.
-            if (!value) { return false; }
-
-            switch (feature) {
-                case 'orientation':
-                case 'scan':
-                    return value.toLowerCase() === expValue.toLowerCase();
-
-                case 'width':
-                case 'height':
-                case 'device-width':
-                case 'device-height':
-                    expValue = toPx(expValue);
-                    value    = toPx(value);
-                    break;
-
-                case 'resolution':
-                    expValue = toDpi(expValue);
-                    value    = toDpi(value);
-                    break;
-
-                case 'aspect-ratio':
-                case 'device-aspect-ratio':
-                case /* Deprecated */ 'device-pixel-ratio':
-                    expValue = toDecimal(expValue);
-                    value    = toDecimal(value);
-                    break;
-
-                case 'grid':
-                case 'color':
-                case 'color-index':
-                case 'monochrome':
-                    expValue = parseInt(expValue, 10) || 1;
-                    value    = parseInt(value, 10) || 0;
-                    break;
-            }
-
-            switch (modifier) {
-                case 'min': return value >= expValue;
-                case 'max': return value <= expValue;
-                default   : return value === expValue;
-            }
-        });
-
-        return (expressionsMatch && !inverse) || (!expressionsMatch && inverse);
-    });
+    return parseQuery(mediaQuery).some(function(expression){
+		return matchSingleExpression(expression, values);
+	});
 }
 
 function parseQuery(mediaQuery) {
@@ -138,7 +84,74 @@ function parseQuery(mediaQuery) {
     });
 }
 
+
+
 // -- Utilities ----------------------------------------------------------------
+
+function matchSingleExpression(query, values) {
+	var inverse = query.inverse;
+
+	// Either the parsed or specified `type` is "all", or the types must be
+	// equal for a match.
+	var typeMatch = query.type === 'all' || values.type === query.type;
+
+	// Quit early when `type` doesn't match, but take "not" into account.
+	if ((typeMatch && inverse) || !(typeMatch || inverse)) {
+		return false;
+	}
+
+	var expressionsMatch = query.expressions.every(function (expression) {
+		var feature  = expression.feature,
+			modifier = expression.modifier,
+			expValue = expression.value,
+			value    = values[feature];
+
+		// Missing or falsy values don't match.
+		if (!value) { return false; }
+
+		switch (feature) {
+			case 'orientation':
+			case 'scan':
+				return value.toLowerCase() === expValue.toLowerCase();
+
+			case 'width':
+			case 'height':
+			case 'device-width':
+			case 'device-height':
+				expValue = toPx(expValue);
+				value    = toPx(value);
+				break;
+
+			case 'resolution':
+				expValue = toDpi(expValue);
+				value    = toDpi(value);
+				break;
+
+			case 'aspect-ratio':
+			case 'device-aspect-ratio':
+			case /* Deprecated */ 'device-pixel-ratio':
+				expValue = toDecimal(expValue);
+				value    = toDecimal(value);
+				break;
+
+			case 'grid':
+			case 'color':
+			case 'color-index':
+			case 'monochrome':
+				expValue = parseInt(expValue, 10) || 1;
+				value    = parseInt(value, 10) || 0;
+				break;
+		}
+
+		switch (modifier) {
+			case 'min': return value >= expValue;
+			case 'max': return value <= expValue;
+			default   : return value === expValue;
+		}
+	});
+
+	return (expressionsMatch && !inverse) || (!expressionsMatch && inverse);
+}
 
 function toDecimal(ratio) {
     var decimal = Number(ratio),
