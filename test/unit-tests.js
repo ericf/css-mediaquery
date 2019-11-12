@@ -158,6 +158,12 @@ describe('mediaQuery.match()', function () {
                     '(max-height: 1000px)', {height: '60pc'}
                 )).to.be.true;
             });
+
+            it('should work with literal 0', function () {
+                expect(mediaQuery.match(
+                    '(max-height: 1000px)', {height: 0}
+                )).to.be.true;
+            });
         });
 
     });
