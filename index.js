@@ -37,7 +37,7 @@ function matchQuery(mediaQuery, values) {
                 value    = values[feature];
 
             // Missing or falsy values don't match.
-            if (!value) { return false; }
+            if (!value && value !== 0) { return false; }
 
             switch (feature) {
                 case 'orientation':
