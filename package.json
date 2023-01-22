@@ -24,7 +24,7 @@
   "contributors": [
     "Tilo Mitra <tilomitra@gmail.com>"
   ],
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/ericf/css-mediaquery/issues"
   },
