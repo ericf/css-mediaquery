@@ -57,7 +57,8 @@ describe('mediaQuery.parse()', function () {
 });
 
 describe('mediaQuery.match()', function () {
-    describe('Equality Check', function () {
+
+	describe('Equality Check', function () {
         it('Orientation: should return true for a correct match (===)', function () {
             expect(mediaQuery.match(
                 '(orientation: portrait)', {orientation: 'portrait'}
@@ -415,3 +416,12 @@ describe('mediaQuery.match()', function () {
     });
 });
 
+
+describe('mediaQuery.matchFromAST()', function () {	
+	it('should take parsed ast and match it', function(){
+		expect(mediaQuery.matchFromAST(
+			mediaQuery.parse('screen and (min-width: 767px) and (max-width: 979px)'), 
+			{width: 800, type : 'screen',}
+		)).to.be.true;
+	});
+});
