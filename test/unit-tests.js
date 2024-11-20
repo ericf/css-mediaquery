@@ -70,6 +70,12 @@ describe('mediaQuery.match()', function () {
             )).to.be.false;
         });
 
+        it('Orientation: should return true for an ignore case', function () {
+            expect(mediaQuery.match(
+                '(width: 800px) and (orientation: landscape)', {width: 800}, {orientation: '*'}
+            )).to.be.true;
+        });
+
         it('Scan: should return true for a correct match (===)', function () {
             expect(mediaQuery.match(
                 '(scan: progressive)', {scan: 'progressive'}
