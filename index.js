@@ -157,7 +157,7 @@ function toDpi(resolution) {
         units = String(resolution).match(RE_RESOLUTION_UNIT)[1];
 
     switch (units) {
-        case 'dpcm': return value / 2.54;
+        case 'dpcm': return value * 2.54;
         case 'dppx': return value * 96;
         default    : return value;
     }
@@ -173,8 +173,8 @@ function toPx(length) {
         case 'cm' : return value * 96 / 2.54;
         case 'mm' : return value * 96 / 2.54 / 10;
         case 'in' : return value * 96;
-        case 'pt' : return value * 72;
-        case 'pc' : return value * 72 / 12;
+        case 'pt' : return value * 96 / 72;
+        case 'pc' : return value * 96 / 6;
         default   : return value;
     }
 }

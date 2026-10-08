@@ -117,6 +117,15 @@ describe('mediaQuery.match()', function () {
         });
 
         describe('Different Units', function () {
+            ['72pt', '6pc'].forEach(function (length) {
+                it('should equate ' + length + ' with 96px in either operand', function () {
+                    expect(mediaQuery.match('(width: ' + length + ')', {width: '96px'})).to.be.true;
+                    expect(mediaQuery.match('(width: 96px)', {width: length})).to.be.true;
+                    expect(mediaQuery.match('(min-width: ' + length + ')', {width: '95px'})).to.be.false;
+                    expect(mediaQuery.match('(max-width: ' + length + ')', {width: '97px'})).to.be.false;
+                });
+            });
+
             it('should work with ems', function () {
                 expect(mediaQuery.match(
                     '(min-width: 500px)', {width: '48em'}
@@ -190,11 +199,18 @@ describe('mediaQuery.match()', function () {
         it('should convert units properly', function () {
             expect(mediaQuery.match(
                 '(min-resolution: 72dpi)', {resolution: '75dpcm'}
-            )).to.be.false;
+            )).to.be.true;
 
             expect(mediaQuery.match(
                 '(resolution: 192dpi)', {resolution: '2dppx'}
             )).to.be.true;
+        });
+
+        it('should equate 100dpcm with 254dpi in either operand', function () {
+            expect(mediaQuery.match('(resolution: 100dpcm)', {resolution: '254dpi'})).to.be.true;
+            expect(mediaQuery.match('(resolution: 254dpi)', {resolution: '100dpcm'})).to.be.true;
+            expect(mediaQuery.match('(min-resolution: 100dpcm)', {resolution: '253dpi'})).to.be.false;
+            expect(mediaQuery.match('(max-resolution: 100dpcm)', {resolution: '255dpi'})).to.be.false;
         });
     });
 
